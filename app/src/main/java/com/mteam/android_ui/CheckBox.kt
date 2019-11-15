@@ -20,6 +20,7 @@ package com.mteam.android_ui
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
@@ -51,9 +52,21 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
         TextPaint(Paint.ANTI_ALIAS_FLAG)
     }
     private val checkDrawable: Drawable
-    private var drawBitmap: Bitmap? = null
+    private val drawBitmap by lazy {
+        Bitmap.createBitmap(
+            AndroidUtilities.dp(size),
+            AndroidUtilities.dp(size),
+            Bitmap.Config.ARGB_4444
+        )
+    }
     private var size = 22f
-    private var checkBitmap: Bitmap? = null
+    private val checkBitmap by lazy {
+        Bitmap.createBitmap(
+            AndroidUtilities.dp(size),
+            AndroidUtilities.dp(size),
+            Bitmap.Config.ARGB_4444
+        )
+    }
     private var bitmapCanvas: Canvas? = null
     private var checkCanvas: Canvas? = null
     private var progress = 0f
@@ -81,7 +94,7 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
         eraser2.strokeWidth = AndroidUtilities.dp(28f).toFloat()
         eraser2.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
 
-        backgroundPaint.setColor(0xffffffff)
+        backgroundPaint.color = context.resources.getColor(R.color.color_non_check)
         backgroundPaint.style = Paint.Style.STROKE
         backgroundPaint.strokeWidth = AndroidUtilities.dp(2f).toFloat()
 
@@ -92,19 +105,9 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
 
     override fun setVisibility(visibility: Int) {
         super.setVisibility(visibility)
-        if (visibility == VISIBLE && drawBitmap == null) {
-            drawBitmap = Bitmap.createBitmap(
-                AndroidUtilities.dp(size),
-                AndroidUtilities.dp(size),
-                Bitmap.Config.ARGB_4444
-            )
-            bitmapCanvas = Canvas(drawBitmap!!)
-            checkBitmap = Bitmap.createBitmap(
-                AndroidUtilities.dp(size),
-                AndroidUtilities.dp(size),
-                Bitmap.Config.ARGB_4444
-            )
-            checkCanvas = Canvas(checkBitmap!!)
+        if (visibility == VISIBLE) {
+            bitmapCanvas = Canvas(drawBitmap)
+            checkCanvas = Canvas(checkBitmap)
         }
     }
 
@@ -139,7 +142,7 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
     fun setColor(backgroundColor: Int, checkColor: Int) {
         color = backgroundColor
         checkDrawable.colorFilter = PorterDuffColorFilter(checkColor, PorterDuff.Mode.MULTIPLY)
-        textPaint.setColor(checkColor)
+        textPaint.color = checkColor
         invalidate()
     }
 
@@ -149,8 +152,8 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
     }
 
     fun setCheckColor(checkColor: Int) {
-        checkDrawable.colorFilter = PorterDuffColorFilter(checkColor, PorterDuff.Mode.MULTIPLY)
-        textPaint.setColor(checkColor)
+        //checkDrawable.colorFilter = PorterDuffColorFilter(checkColor, PorterDuff.Mode.MULTIPLY)
+        textPaint.color = checkColor
         invalidate()
     }
 
@@ -201,7 +204,7 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
         invalidate()
     }
 
-    fun setChecked(num: Int, checked: Boolean, animated: Boolean) {
+    private fun setChecked(num: Int, checked: Boolean, animated: Boolean) {
         if (num >= 0) {
             checkedText = "" + (num + 1)
         }
@@ -257,18 +260,21 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
             if (hasBorder) {
                 rad -= AndroidUtilities.dp(2f)
             }
-            bitmapCanvas!!.drawCircle(
-                measuredWidth / 2.toFloat(),
-                measuredHeight / 2.toFloat(),
-                rad,
-                paint
-            )
-            bitmapCanvas!!.drawCircle(
-                measuredWidth / 2.toFloat(),
-                measuredHeight / 2.toFloat(),
-                rad * (1 - roundProgress),
-                eraser
-            )
+            bitmapCanvas?.let {
+                it.drawCircle(
+                    measuredWidth / 2.toFloat(),
+                    measuredHeight / 2.toFloat(),
+                    rad,
+                    paint
+                )
+                it.drawCircle(
+                    measuredWidth / 2.toFloat(),
+                    measuredHeight / 2.toFloat(),
+                    rad * (1 - roundProgress),
+                    eraser
+                )
+            }
+
             canvas.drawBitmap(drawBitmap!!, 0f, 0f, null)
             checkBitmap!!.eraseColor(0)
             if (checkedText != null) {
@@ -286,7 +292,10 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
                 val x = (measuredWidth - w) / 2
                 val y = (measuredHeight - h) / 2
                 checkDrawable.setBounds(x, y + checkOffset, x + w, y + h + checkOffset)
-                checkDrawable.draw(checkCanvas!!)
+                checkCanvas?.let {
+                    checkDrawable.draw(it)
+                }
+
             }
             checkCanvas!!.drawCircle(
                 (measuredWidth / 2 - AndroidUtilities.dp(2.5f)).toFloat(),

@@ -38,7 +38,7 @@ object AndroidUtilities {
     private var leftBaseline = 0
     private var usingHardwareInput = false
 
-    private var isTablet: Boolean = MyApplication.applicationContext.resources.getBoolean(R.bool.isTablet)
+    private var isTablet: Boolean = MyApplication.INSTANCE.resources.getBoolean(R.bool.isTablet)
 
     fun checkFullScreen(activity: Activity): Boolean {
         try {
@@ -145,6 +145,6 @@ object AndroidUtilities {
 
     init {
         leftBaseline = if (isTablet) 87 else 79
-        checkDisplaySize(MyApplication.applicationContext, null)
+        checkDisplaySize(MyApplication.INSTANCE, null)
     }
 }
