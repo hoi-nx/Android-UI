@@ -261,18 +261,8 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
                 rad -= AndroidUtilities.dp(2f)
             }
             bitmapCanvas?.let {
-                it.drawCircle(
-                    measuredWidth / 2.toFloat(),
-                    measuredHeight / 2.toFloat(),
-                    rad,
-                    paint
-                )
-                it.drawCircle(
-                    measuredWidth / 2.toFloat(),
-                    measuredHeight / 2.toFloat(),
-                    rad * (1 - roundProgress),
-                    eraser
-                )
+                it.drawCircle(measuredWidth / 2.toFloat(), measuredHeight / 2.toFloat(), rad, paint)
+                it.drawCircle(measuredWidth / 2.toFloat(), measuredHeight / 2.toFloat(), rad * (1 - roundProgress), eraser)
             }
 
             canvas.drawBitmap(drawBitmap!!, 0f, 0f, null)
@@ -297,12 +287,7 @@ class CheckBox(context: Context, attrs: AttributeSet? = null, resId: Int) :
                 }
 
             }
-            checkCanvas!!.drawCircle(
-                (measuredWidth / 2 - AndroidUtilities.dp(2.5f)).toFloat(),
-                (measuredHeight / 2 + AndroidUtilities.dp(4f)).toFloat(),
-                (measuredWidth + AndroidUtilities.dp(6f)) / 2 * (1 - checkProgress),
-                eraser2
-            )
+            checkCanvas!!.drawCircle((measuredWidth / 2 - AndroidUtilities.dp(2.5f)).toFloat(), (measuredHeight / 2 + AndroidUtilities.dp(4f)).toFloat(), (measuredWidth + AndroidUtilities.dp(6f)) / 2 * (1 - checkProgress), eraser2)
             canvas.drawBitmap(checkBitmap!!, 0f, 0f, null)
         }
     }
